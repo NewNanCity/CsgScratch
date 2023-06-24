@@ -5,6 +5,10 @@ export default defineConfig<'rspack'>({
   runtime: {
     router: true,
   },
+  output: {
+    assetPrefix: '.',
+    copy: [{ from: './src/media', to: './media' }],
+  },
   plugins: [
     appTools({
       bundler: 'experimental-rspack',

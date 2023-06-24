@@ -1,0 +1,126 @@
+motion:
+  name: '%{BKY_CATEGORY_MOTION}'
+  colour: '#4C97FF'
+  secondaryColour: '#3373CC'
+  blocks:
+    Task::command:
+    Task::consolecommand:
+    Task::setblock:
+    Task::damage:
+    Task::food:
+    Task::heal:
+    Task::sethp:
+    Task::maxhp:
+    Task::potion:
+    Task::teleport:
+    Task::spawnmob:
+    Task::removemobs:
+    Task::checkprice:
+    Task::title:
+    Task::note:
+    Task::globalnotice:
+    Task::tell:
+    Task::say:
+    Task::addhologram:
+    Task::edithologram:
+    Task::delhologram:
+    Task::clearhologram:
+    Task::respond:
+    Task::respond::condition:
+    Task::divide:
+    Task::enabletrigger:
+    Task::disabletrigger:
+    Task::midjoin:
+    Task::join:
+    Task::leave:
+    Task::taskitem:
+    Task::taskitem::at:
+events:
+  name: '%{BKY_CATEGORY_EVENTS}'
+  colour: '#FFD500'
+  secondaryColour: '#CC9900'
+  blocks:
+    Event::onGroupStart:
+    Event::onPlayerJoin:
+    Event::onPlayerMidJoin:
+    Event::onPlayerLeave:
+    Event::onPlayerRest:
+    Event::onEverySecond:
+    Event::onTimePast:
+    Event::onLobbyTimePast:
+    Event::onPlayerJoinFailed:
+    Event::onPlayerEnough:
+    Event::onPlayerLeaveInWaiting:
+    Event::onGroupLoaded:
+control:
+  name: '%{BKY_CATEGORY_CONTROL}'
+  colour: '#FFAB19'
+  secondaryColour: '#CF8B17'
+  blocks:
+    Control::delay:
+    Control::end:
+    Control::end::condition:
+    Control::stopgame:
+    Control::endwhenclear:
+    Control::check_or_consume_item:
+    Control::nametask:
+    Control::stoptask:
+    Control::mark:
+    Control::goto:
+    Control::goto::condition:
+    Control::skip:
+sensing:
+  name: '%{BKY_CATEGORY_SENSING}'
+  colour: '#4CBFE6'
+  secondaryColour: '#2E8EB8'
+  blocks:
+    Sensing::BreakBlock:
+    Sensing::Death:
+    Sensing::DamagePlayer:
+    Sensing::Damaged:
+    Sensing::DamageEntity:
+    Sensing::Diss:
+    Sensing::Interact:
+    Sensing::InteractBlock::id:
+    Sensing::InteractBlock::cord:
+    Sensing::KillEntity:
+    Sensing::KillAllEntity:
+    Sensing::KillPlayer:
+    Sensing::Offline:
+    Sensing::PickupItem:
+    Sensing::Respond:
+    Sensing::Sneak:
+    Sensing::SendCommand:
+    Sensing::TimeUp:
+    Sensing::TimeUp::GroupTimer:
+    Sensing::WalkInRegion:
+    Sensing::WalkOutRegion:
+    Sensing::VexClickButton:
+    Sensing::VexKeyPressed:
+operators:
+  name: '%{BKY_CATEGORY_OPERATORS}'
+  colour: '#40BF4A'
+  secondaryColour: '#389438'
+  blocks:
+    # Operators::and:
+    # Operators::or:
+    Operators::equal:
+    Operators::not_equal:
+    Operators::greater_than:
+    Operators::leaser_than:
+    Operators::check_permission:
+    Operators::check_group:
+    Operators::check_hplevel:
+data:
+  name: '%{BKY_CATEGORY_VARIABLES}'
+  colour: '#FF8C1A'
+  secondaryColour: '#DB6E00'
+  blocks:
+    Data::data:
+    Data::tag:
+    Data::placeholder:
+    Data::timer:
+    Data::playervalue:
+    Data:globalplayervalue:
+    Data::value:
+    Data::globalvalue:

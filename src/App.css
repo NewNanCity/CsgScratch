@@ -1,0 +1,38 @@
+/*webkit内核*/
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* 解决 iOS 上的屏幕滚动和全屏高度问题 */
+html,
+body,
+div#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  margin: 0;
+  background: #282c34;
+}
+
+div#root {
+  display: flex;
+}
+
+.button-transition {
+  transition: opacity 400ms background-color 250ms cubic-bezier(0.4, 0, 0.2, 1)
+      0ms,
+    box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+    border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+    color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+.editor-side-resize-bar {
+  transition: all 300ms;
+  z-index: 1;
+}
+
+.editor-side-resize-bar:hover,
+.editor-side-resize-bar:active {
+  background-color: #0093ff77;
+  box-shadow: 0 0 3px #0009;
+}
