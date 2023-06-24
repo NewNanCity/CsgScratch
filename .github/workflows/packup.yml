@@ -50,7 +50,7 @@ jobs:
       - name: Packup Buildings
         uses: montudor/action-zip@v1
         with:
-          args: zip -qq -r dist.zip dir
+          args: zip -qq -r dist.zip dist
 
       # Thanks for GPT-4
       - name: Get the current tag
