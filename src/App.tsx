@@ -1,33 +1,37 @@
 import React from 'react';
+import { parseDocument } from 'yaml';
+import { Resizable } from 're-resizable';
+import ScratchBlocks from 'scratch-blocks';
+import MuiAlert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
+import { East, West } from '@mui/icons-material';
 import { Helmet } from '@modern-js/runtime/head';
 import IconButton from '@mui/material/IconButton';
-import { East, West } from '@mui/icons-material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
-import { parseDocument } from 'yaml';
-import ScratchBlocks from 'scratch-blocks';
-import { Resizable } from 're-resizable';
-import CodeMirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { oneDark } from '@codemirror/theme-one-dark';
+import CodeMirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror';
 
 import './App.css';
 import { version } from '@/data/version';
 import { defineBlocks } from '@/data/blocks';
 import defaultYaml from '@/data/defaultYaml';
-import { genToolbox } from '@/scratch/loader/toolbox';
-import { workspace2Yaml, dom2obj } from '@/data/workspace2Yaml';
-import categories from '@/data/toolbox-categories.yml';
-import { yaml2workspaceDom } from '@/data/yaml2Workspace';
 import TitleBanner from '@/components/TitleBanner';
+import { genToolbox } from '@/scratch/loader/toolbox';
+import categories from '@/data/toolbox-categories.yml';
+import { workspace2Yaml, dom2obj } from '@/data/workspace2Yaml';
+import { yaml2workspaceDom, obj2dom } from '@/data/yaml2Workspace';
 import {
   useTheme,
   useCMExtensions,
   ScratchInjectProps,
 } from '@/components/hooks';
 
+(globalThis as any).dom2obj = dom2obj;
+(globalThis as any).obj2dom = obj2dom;
 (globalThis as any).ScratchBlocks = ScratchBlocks;
 (globalThis as any).workspace2Yaml = workspace2Yaml;
-(globalThis as any).dom2obj = dom2obj;
+
 defineBlocks(ScratchBlocks);
 ScratchBlocks.ScratchMsgs.setLocale('zh-cn');
 
@@ -36,6 +40,7 @@ export default React.memo(() => {
   const extensions = useCMExtensions();
   const workspaceRef = React.useRef<any>();
   const [cmReady, setCMReady] = React.useState(false);
+  const [errorCount, setErrorCount] = React.useState(0);
   const [scratchReady, setScratchReady] = React.useState(false);
   const toolbox = React.useMemo(() => genToolbox(categories), []);
   const mountScratch = React.useCallback((element: HTMLDivElement | null) => {
@@ -80,55 +85,77 @@ export default React.memo(() => {
     const t = d.toJS();
     workspaceRef.current.clear();
     workspaceRef.current.clearUndo();
-    ScratchBlocks.Xml.domToWorkspace(
-      yaml2workspaceDom(
-        t.ControlTask,
-        t.Trigger,
-        JSON.parse(t.CsgScratchMeta ?? '{}'),
-        ct => (d.getIn(['ControlTask', ct], true) as any)?.commentBefore,
-        t => (d.getIn(['Trigger', t], true) as any)?.commentBefore,
-        (ct, index) =>
-          (d.getIn(['ControlTask', ct, index], true) as any)?.comment,
-        (t, index) =>
-          (d.getIn(['Trigger', t, 'Task', index], true) as any)?.comment,
-      ),
-      workspaceRef.current,
+    let errorCount = 0;
+    const dom = yaml2workspaceDom(
+      t.ControlTask,
+      t.Trigger,
+      JSON.parse(t.CsgScratchMeta ?? '{}'),
+      ct => (d.getIn(['ControlTask', ct], true) as any)?.commentBefore,
+      t => (d.getIn(['Trigger', t], true) as any)?.commentBefore,
+      (ct, index) =>
+        (d.getIn(['ControlTask', ct, index], true) as any)?.comment,
+      (t, index) =>
+        (d.getIn(['Trigger', t, 'Task', index], true) as any)?.comment,
+      (...args) => {
+        console.error(...args);
+        errorCount++;
+      },
     );
+    try {
+      ScratchBlocks.Xml.domToWorkspace(dom, workspaceRef.current);
+    } catch (e) {
+      errorCount++;
+      setErrorCount(errorCount);
+      throw e;
+    }
+    setErrorCount(errorCount);
   }, []);
   const stringifyYaml = React.useCallback(() => {
     const doc = parseDocument(editorRef.current.get());
     const meta: Record<string, any> = { version };
+    let errorCount = 0;
     const { ControlTask, Trigger, commentMap } = workspace2Yaml(
       ScratchBlocks,
       workspaceRef.current,
       meta,
+      (...args) => {
+        console.error(...args);
+        errorCount++;
+      },
     );
-    (doc as any).contents.set('Trigger', doc.createNode(Trigger));
-    for (const [tName, [tComment, taskComments]] of Object.entries(
-      commentMap.t,
-    )) {
-      (doc.getIn(['Trigger', tName], true) as any).commentBefore = tComment;
-      for (let i = 0; i < taskComments.length; i++) {
-        (doc.getIn(['Trigger', tName, 'Task', i], true) as any).comment =
-          taskComments[i];
+    try {
+      (doc as any).contents.set('Trigger', doc.createNode(Trigger));
+      for (const [tName, [tComment, taskComments]] of Object.entries(
+        commentMap.t,
+      )) {
+        (doc.getIn(['Trigger', tName], true) as any).commentBefore = tComment;
+        for (let i = 0; i < taskComments.length; i++) {
+          (doc.getIn(['Trigger', tName, 'Task', i], true) as any).comment =
+            taskComments[i];
+        }
       }
-    }
-    (doc as any).contents.set('ControlTask', doc.createNode(ControlTask));
-    for (const [ctName, [ctComment, taskComments]] of Object.entries(
-      commentMap.ct,
-    )) {
-      (doc.getIn(['ControlTask', ctName], true) as any).commentBefore =
-        ctComment;
-      for (let i = 0; i < taskComments.length; i++) {
-        (doc.getIn(['ControlTask', ctName, i], true) as any).comment =
-          taskComments[i];
+      (doc as any).contents.set('ControlTask', doc.createNode(ControlTask));
+      for (const [ctName, [ctComment, taskComments]] of Object.entries(
+        commentMap.ct,
+      )) {
+        (doc.getIn(['ControlTask', ctName], true) as any).commentBefore =
+          ctComment;
+        for (let i = 0; i < taskComments.length; i++) {
+          (doc.getIn(['ControlTask', ctName, i], true) as any).comment =
+            taskComments[i];
+        }
       }
+      (doc as any).contents.set(
+        'CsgScratchMeta',
+        doc.createNode(JSON.stringify(meta)),
+      );
+      editorRef.current.set(String(doc));
+    } catch (e) {
+      errorCount++;
+      setErrorCount(errorCount);
+      throw e;
     }
-    (doc as any).contents.set(
-      'CsgScratchMeta',
-      doc.createNode(JSON.stringify(meta)),
-    );
-    editorRef.current.set(String(doc));
+    setErrorCount(errorCount);
   }, []);
   React.useEffect(() => {
     if (cmReady && scratchReady) {
@@ -143,6 +170,24 @@ export default React.memo(() => {
         <title>CsgScratch Editor</title>
       </Helmet>
       <TitleBanner />
+      <Snackbar
+        open={errorCount > 0}
+        autoHideDuration={6000}
+        onClose={() => setErrorCount(0)}
+      >
+        <MuiAlert
+          onClose={() => setErrorCount(0)}
+          severity="error"
+          sx={{ width: '100%' }}
+          elevation={6}
+          variant="filled"
+        >
+          转换过程中出现 {errorCount} 处错误，按 F12 <br />
+          (如果没有反应请百度如何开启浏览器的开发者模式)
+          <br />
+          点击控制台(Console)查看详情
+        </MuiAlert>
+      </Snackbar>
       <Resizable
         defaultSize={{ width: '70%', height: '100%' }}
         enable={{ right: true }}

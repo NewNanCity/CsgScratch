@@ -17,7 +17,7 @@ motion:
     Task::removemobs:
     Task::checkprice:
     Task::title:
-    Task::note:
+    Task::notice:
     Task::globalnotice:
     Task::tell:
     Task::say:
@@ -50,6 +50,7 @@ events:
     Event::onLobbyTimePast:
     Event::onPlayerJoinFailed:
     Event::onPlayerEnough:
+    Event::onPlayerFull:
     Event::onPlayerLeaveInWaiting:
     Event::onGroupLoaded:
 control:

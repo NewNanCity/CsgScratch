@@ -79,7 +79,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([w, x, y, z, b, t]) => `setblock{${b},${x} ${y} ${z} ${w}} ${t}`,
     parser: [
-      /^\s*setblock{([^}]+)}\s*(\S+.+)/,
+      /^\s*setblock{([^}]+)}\s*(\S+.+)?/,
       ([c, t]) => {
         const [block, cord] = c.split(',', 2);
         const [x, y, z, w] = cord.trim().split(/(?:,\s*)|(?:\s+)/, 4);
@@ -104,7 +104,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([t, a]) => `damage{${a}} ${t}`,
     parser: [
-      /^\s*damage{([^}]+)}\s*(\S+.+)/,
+      /^\s*damage{([^}]+)}\s*(\S+.+)?/,
       ([c, t]) => [
         ['target', t],
         ['amount', c],
@@ -121,7 +121,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([t, a]) => `food{${a}} ${t}`,
     parser: [
-      /^\s*food{([^}]+)}\s*(\S+.+)/,
+      /^\s*food{([^}]+)}\s*(\S+.+)?/,
       ([c, t]) => [
         ['target', t],
         ['amount', c],
@@ -138,7 +138,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([t, a]) => `heal{${a}} ${t}`,
     parser: [
-      /^\s*heal{([^}]+)}\s*(\S+.+)/,
+      /^\s*heal{([^}]+)}\s*(\S+.+)?/,
       ([c, t]) => [
         ['target', t],
         ['amount', c],
@@ -155,7 +155,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([t, v]) => `sethp{${v}} ${t}`,
     parser: [
-      /^\s*sethp{([^}]+)}\s*(\S+.+)/,
+      /^\s*sethp{([^}]+)}\s*(\S+.+)?/,
       ([c, t]) => [
         ['target', t],
         ['value', c],
@@ -172,7 +172,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([t, v]) => `maxhp{${v}} ${t}`,
     parser: [
-      /^\s*maxhp{([^}]+)}\s*(\S+.+)/,
+      /^\s*maxhp{([^}]+)}\s*(\S+.+)?/,
       ([c, t]) => [
         ['target', t],
         ['value', c],
@@ -204,7 +204,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([t, e, d, a]) => `potion{${e},${d},${a}} ${t}`,
     parser: [
-      /^\s*potion{([^,]+),([^,]+),([^}]+)}\s*(\S+.+)/,
+      /^\s*potion{([^,]+),([^,]+),([^}]+)}\s*(\S+.+)?/,
       ([e, d, a, t]) => [
         ['target', t],
         ['effect', e],
@@ -226,7 +226,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([t, w, x, y, z]) => `teleport{${x} ${y} ${z} ${w}} ${t}`,
     parser: [
-      /^\s*teleport{([^}]+)}\s*(\S+.+)/,
+      /^\s*teleport{([^}]+)}\s*(\S+.+)?/,
       ([c, t]) => {
         const [x, y, z, w] = c.trim().split(/(?:,\s*)|(?:\s+)/, 4);
         return [
@@ -319,7 +319,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([t, c]) => `checkprice{${c}} ${t}`,
     parser: [
-      /^\s*checkprice{([^}]+)}\s*(\S+.+)/,
+      /^\s*checkprice{([^}]+)}\s*(\S+.+)?/,
       ([c, t]) => [
         ['target', t],
         ['consume', c],
@@ -342,7 +342,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     jsonfy: ([t, ti, st, d, fi, fo]) =>
       `title{${ti},${st},${d},${fi},${fo}} ${t}`,
     parser: [
-      /^\s*title{([^}]*)}\s*(\S+.+)/,
+      /^\s*title{([^}]*)}\s*(\S+.+)?/,
       ([p, t]) => {
         const [ti, st, d, fi, fo] = p.split(',', 5);
         return [
@@ -356,13 +356,13 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
       },
     ],
   },
-  'Task::note': {
+  'Task::notice': {
     tooltip: '给本队伍内的所有玩家发送一个消息，出现在聊天栏',
     message0: '给本队伍内的所有玩家发消息: %1',
     args0: [{ type: 'field_input', text: '', name: 'message' }],
     ...taskTemplate,
-    jsonfy: ([m]) => `note{${m}}`,
-    parser: [/^\s*note{([^}]+)}/, ([m]) => [['message', m]]],
+    jsonfy: ([m]) => `notice{${m}}`,
+    parser: [/^\s*notice{([^}]+)}/, ([m]) => [['message', m]]],
   },
   'Task::globalnotice': {
     tooltip: '给本游戏所有玩家发送一个消息，出现在聊天栏',
@@ -382,7 +382,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([t, m]) => `tell{${m}} ${t}`,
     parser: [
-      /^\s*tell{([^}]+)}\s*(\S+.+)/,
+      /^\s*tell{([^}]+)}\s*(\S+.+)?/,
       ([c, t]) => [
         ['target', t],
         ['message', c],
@@ -399,7 +399,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([t, m]) => `say{${m}} ${t}`,
     parser: [
-      /^\s*say{([^}]+)}\s*(\S+.+)/,
+      /^\s*say{([^}]+)}\s*(\S+.+)?/,
       ([c, t]) => [
         ['target', t],
         ['message', c],
@@ -492,7 +492,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([t, ty, p]) => `${ty}{${p}} ${t}`,
     parser: [
-      /^\s*(respond|globalrespond){([^}]+)}\s*(\S+.+)/,
+      /^\s*(respond|globalrespond){([^}]+)}\s*(\S+.+)?/,
       ([ty, p, t]) => [
         ['target', t],
         ['type', ty],
@@ -519,7 +519,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([c, t, ty, p]) => `${ty}{${p},${c}} ${t}`,
     parser: [
-      /^\s*(respond|globalrespond){([^,]+),([^}]+)}\s*(\S+.+)/,
+      /^\s*(respond|globalrespond){([^,]+),([^}]+)}\s*(\S+.+)?/,
       ([ty, c, p, t]) => [
         ['condition', c, 'condition'],
         ['target', t],
@@ -580,7 +580,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([t, tm]) => `join{${tm}} ${t}`,
     parser: [
-      /^\s*join{([^}]+)}\s*(\S+.+)/,
+      /^\s*join{([^}]+)}\s*(\S+.+)?/,
       ([tm, t]) => [
         ['team', tm],
         ['target', t],
@@ -593,7 +593,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     args0: [{ type: 'field_input', text: '@p', name: 'target' }],
     ...taskTemplate,
     jsonfy: ([t]) => `leave{} ${t}`,
-    parser: [/^\s*leave{[^}]*}\s*(\S+.+)/, ([t]) => [['target', t]]],
+    parser: [/^\s*leave{[^}]*}\s*(\S+.+)?/, ([t]) => [['target', t]]],
   },
   'Task::taskitem': {
     tooltip: '给予目标一个物品执行器',
@@ -606,7 +606,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([t, i]) => `taskitem{${i}} ${t}`,
     parser: [
-      /^\s*taskitem{([^}]+)}\s*(\S+.+)/,
+      /^\s*taskitem{([^}]+)}\s*(\S+.+)?/,
       ([i, t]) => [
         ['item', i],
         ['target', t],
@@ -632,7 +632,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([t, i, s]) => `taskitem{${i},${s}} ${t}`,
     parser: [
-      /^\s*taskitem{([^,]+),([^}]+)}\s*(\S+.+)/,
+      /^\s*taskitem{([^,]+),([^}]+)}\s*(\S+.+)?/,
       ([i, s, t]) => [
         ['target', t],
         ['item', i],
@@ -677,7 +677,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     extensions: ['colours_control', 'shape_statement'],
     jsonfy: ([t, c]) => `end{${c}} ${t}`,
     parser: [
-      /^\s*end{([^}]+)}\s*(\S+.+)/,
+      /^\s*end{([^}]+)}\s*(\S+.+)?/,
       ([c, t]) => [
         ['target', t],
         ['condition', c, 'condition'],
@@ -720,7 +720,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     extensions: ['colours_control', 'shape_statement'],
     jsonfy: ([tp, t, c]) => `${tp}{${c}} ${t}`,
     parser: [
-      /^\s*(check|consume){([^}]+)}\s*(\S+.+)/,
+      /^\s*(check|consume){([^}]+)}\s*(\S+.+)?/,
       ([tp, i, t]) => [
         ['type', tp],
         ['target', t],
@@ -750,11 +750,10 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     tooltip: '为某个任务添加标记，用于 goto 跳转',
     message0: '设置标记 %1',
     args0: [{ type: 'field_input', text: '', name: 'name' }],
-    message1: '%1',
-    args1: [{ type: 'input_statement', name: 'statements' }],
     category: BlockDefine.ScratchBlockCategory.Control,
     extensions: ['colours_control', 'shape_statement'],
-    jsonfy: ([n, s]) => `${s} mark{${n}}`,
+    jsonfy: ([n]) => `mark{${n}}`,
+    parser: [/^\s*mark{([^}]+)}/, ([n]) => [['name', n]]],
   },
   'Control::goto': {
     tooltip: '跳转到某个标记',
@@ -777,7 +776,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     extensions: ['colours_control', 'shape_statement'],
     jsonfy: ([t, c, m]) => `goto{${m},${c}} ${t}`,
     parser: [
-      /^\s*goto{([^},]+),([^}]+)}\s*(\S+.+)/,
+      /^\s*goto{([^},]+),([^}]+)}\s*(\S+.+)?/,
       ([m, c, t]) => [
         ['target', t],
         ['condition', c, 'condition'],
@@ -797,7 +796,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     extensions: ['colours_control', 'shape_statement'],
     jsonfy: ([t, c, n]) => `skip{${n},${c}} ${t}`,
     parser: [
-      /^\s*skip{([^},]+),([^}]+)}\s*(\S+.+)/,
+      /^\s*skip{([^},]+),([^}]+)}\s*(\S+.+)?/,
       ([n, c, t]) => [
         ['target', t],
         ['condition', c, 'condition'],
@@ -1019,7 +1018,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     extensions: ['colours_data', 'shape_statement'],
     jsonfy: ([t, k, v]) => `playervalue{${k},${v}} ${t}`,
     parser: [
-      /^\s*playervalue{([^,]+),([^}]+)}\s*(\S+.+)/,
+      /^\s*playervalue{([^,]+),([^}]+)}\s*(\S+.+)?/,
       ([k, v, t]) => [
         ['target', t],
         ['key', k],
@@ -1040,7 +1039,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     extensions: ['colours_data', 'shape_statement'],
     jsonfy: ([t, k, v]) => `globalplayervalue{${k},${v}} ${t}`,
     parser: [
-      /^\s*globalplayervalue{([^,]+),([^}]+)}\s*(\S+.+)/,
+      /^\s*globalplayervalue{([^,]+),([^}]+)}\s*(\S+.+)?/,
       ([k, v, t]) => [
         ['target', t],
         ['key', k],
@@ -1153,6 +1152,12 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     message0: '当玩家达到最小人数(可开始倒计时)时 [限非自由加入]',
     ...eventTemplate,
     jsonfy: () => 'onPlayerEnough',
+  },
+  'Event::onPlayerFull': {
+    tooltip: '在队伍等待时，玩家达到最大人数时触发',
+    message0: '当玩家达到最大人数时触发 [限非自由加入]',
+    ...eventTemplate,
+    jsonfy: () => 'onPlayerFull',
   },
   'Event::onPlayerLeaveInWaiting': {
     tooltip: '当一名玩家在游戏正在等待开始时离开队伍，则会执行',

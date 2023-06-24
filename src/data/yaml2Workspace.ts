@@ -2,6 +2,8 @@
 import { blocks } from './blocks';
 import { IBlockArgumentItem } from '@/scratch/define/type';
 
+let errorLog: (message?: any, ...optionalParams: any[]) => void = console.error;
+
 export interface IElementObject {
   tagName: string;
   textContent: string;
@@ -9,7 +11,7 @@ export interface IElementObject {
   [propertyName: string]: any;
 }
 
-const obj2dom = ({
+export const obj2dom = ({
   tagName,
   textContent,
   children,
@@ -33,6 +35,7 @@ type BlockParser = (
 ) => ([string, string] | [string, string, 'condition'])[];
 type TriggerParser = (ids: string[]) => [string, string][];
 
+const blockMap: Record<string, boolean> = {};
 const taskmap: Record<
   string,
   [RegExp, BlockParser, string, Record<string, IBlockArgumentItem>][]
@@ -42,6 +45,7 @@ const triggerMap: Record<
   [TriggerParser, Record<string, IBlockArgumentItem>]
 > = {};
 for (const [key, value] of Object.entries(blocks)) {
+  blockMap[key] = true;
   if (value.parser) {
     const t = key.split('::', 3)[1];
     const fieldInfo: Record<string, IBlockArgumentItem> = {};
@@ -126,6 +130,7 @@ const nextBlock = (obj: IElementObject): IElementObject => ({
   children: [obj],
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const markBlock = (mark: string): IElementObject => ({
   tagName: 'block',
   type: 'Control::mark',
@@ -190,7 +195,9 @@ export const yaml2workspaceDom = (
   tComment: (t: string) => string | undefined,
   ctTaskComment: (ct: string, index: number) => string | undefined,
   tTaskComment: (t: string, index: number) => string | undefined,
+  errorLog_: (message?: any, ...optionalParams: any[]) => void = console.error,
 ) => {
+  errorLog = errorLog_;
   const blocks: IElementObject[] = [];
   meta.ScratchPositionOfControlTask ??= {};
   meta.ScratchPositionOfTrigger ??= {};
@@ -212,36 +219,37 @@ export const yaml2workspaceDom = (
       }
 
       if (typeof task !== 'string') {
-        console.error('task is not string', task);
+        errorLog('task is not string', task);
         continue;
       }
 
       // 单独检查mark
       let t1 = task;
-      // 可能有多个 mark
-      while (true) {
-        const result = /((?:^\s*mark{[^}]*}\s*)|(?:\s+mark{[^}]*}\s*))/.exec(
-          t1,
-        );
-        if (!result) {
-          break;
-        }
-        const mark = /mark{([^}]*)}/.exec(result[1])![1];
-        children.push(markBlock(mark));
-        // 暂存最外一个mark
-        if (tChildren === undefined) {
-          // 仅接下来的 task 会放在里面，后续还是会放在外面的
-          tChildren = children[children.length - 1].children;
-        }
-        // eslint-disable-next-line prefer-destructuring
-        children = children[children.length - 1].children[1].children;
-        t1 = t1.replace(result[1], ' ');
-      }
+      // 先前对 mark{} 语法理解有误，不需要嵌套
+      //   // 可能有多个 mark
+      //   while (true) {
+      //     const result = /((?:^\s*mark{[^}]*}\s*)|(?:\s+mark{[^}]*}\s*))/.exec(
+      //       t1,
+      //     );
+      //     if (!result) {
+      //       break;
+      //     }
+      //     const mark = /mark{([^}]*)}/.exec(result[1])![1];
+      //     children.push(markBlock(mark));
+      //     // 暂存最外一个mark
+      //     if (tChildren === undefined) {
+      //       // 仅接下来的 task 会放在里面，后续还是会放在外面的
+      //       tChildren = children[children.length - 1].children;
+      //     }
+      //     // eslint-disable-next-line prefer-destructuring
+      //     children = children[children.length - 1].children[1].children;
+      //     t1 = t1.replace(result[1], ' ');
+      //   }
       t1 = t1.trim();
 
       const parsers = taskmap[t1.split('{', 2)[0]];
       if (!parsers) {
-        console.error('no parser for', task);
+        errorLog('no parser for', task);
         continue;
       }
       let matchCount = -1;
@@ -260,7 +268,7 @@ export const yaml2workspaceDom = (
         }
       }
       if (!result || !func) {
-        console.error('no match for', task);
+        errorLog('no match for', task);
         continue;
       }
       const [, ...matches] = result;
@@ -286,6 +294,7 @@ export const yaml2workspaceDom = (
 
       for (const f of fields) {
         if (f[2] === 'condition') {
+          // eslint-disable-next-line @typescript-eslint/no-loop-func
           const parseCondition = (
             str: string,
             field: string,
@@ -381,7 +390,7 @@ export const yaml2workspaceDom = (
               children.push(valueBlock(field, b));
               return;
             }
-            console.error('Cannot parse', str, 'of', task);
+            errorLog('Cannot parse', str, 'of', task);
           };
           parseCondition(f[1], f[0], children);
         } else {
@@ -394,15 +403,19 @@ export const yaml2workspaceDom = (
   // ControlTask
   for (const [ctName, ct] of Object.entries(ControlTask)) {
     if (typeof ctName !== 'string' || (ct && !Array.isArray(ct))) {
-      console.error(`Invalid ControlTask: ${ctName}`);
+      errorLog(`Invalid ControlTask: ${ctName}`);
       continue;
     }
     const result = /^\s*([^(]+)(?:\(([^)]+)\))?\s*/.exec(ctName);
     if (!result) {
-      console.error(`Invalid ControlTask: ${ctName}`);
+      errorLog(`Invalid ControlTask: ${ctName}`);
       continue;
     }
     const [, event, param] = result;
+    if (!blockMap[`Event::${event}`]) {
+      errorLog(`Invalid control task block type: ${event}`);
+      continue;
+    }
     const block = blockEvent(event, param);
     const [x, y] = meta.ScratchPositionOfControlTask[event] ?? ['0', '0'];
     block.x = x;
@@ -427,7 +440,7 @@ export const yaml2workspaceDom = (
       (trigger.Id && !Array.isArray(trigger.Id)) ||
       (trigger.Task && !Array.isArray(trigger.Task))
     ) {
-      console.error(`Invalid Trigger: ${tName}`);
+      errorLog(`Invalid Trigger: ${tName}`);
       continue;
     }
     const triggerType: string = trigger.Type;
@@ -438,6 +451,11 @@ export const yaml2workspaceDom = (
       ['WalkOutRegion', 'WalkInRegion'].indexOf(triggerType) >= 0
     ) {
       triggerBlockType = `${triggerBlockType}::Complex`;
+    }
+
+    if (!blockMap[triggerBlockType]) {
+      errorLog(`Invalid trigger block type: ${triggerType} of ${tName}`);
+      continue;
     }
 
     const triggerParams = triggerIds

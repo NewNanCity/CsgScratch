@@ -1,5 +1,7 @@
 import { blocks } from './blocks';
 
+let errorLog: (message?: any, ...optionalParams: any[]) => void = console.error;
+
 interface IElementObject {
   tagName: string;
   textContent: string;
@@ -31,7 +33,9 @@ export const workspace2Yaml = (
   ScratchBlocks: any,
   workspace: any,
   meta: Record<string, any> = {},
+  errorLog_: (message?: any, ...optionalParams: any[]) => void = errorLog,
 ) => {
+  errorLog = errorLog_;
   meta.ScratchPositionOfControlTask ??= {};
   meta.ScratchPositionOfTrigger ??= {};
   const commentMap = {
@@ -69,7 +73,7 @@ export const workspace2Yaml = (
           break;
         }
         default: {
-          console.error(`Unknown tag: ${c.tagName}`, c);
+          errorLog(`Unknown tag: ${c.tagName}`, c);
           break;
         }
       }
@@ -88,7 +92,7 @@ export const workspace2Yaml = (
       if (blocks[obj.type]) {
         return [blocks[obj.type].jsonfy(args, params) as string, next, comment];
       } else {
-        console.error(`Unknown type: ${obj.type}`);
+        errorLog(`Unknown type: ${obj.type}`);
         return ['', next, comment];
       }
     };
@@ -111,7 +115,7 @@ export const workspace2Yaml = (
       continue;
     }
     if (!blocks[obj.type]) {
-      console.error(`Unknown type ${obj.type}`);
+      errorLog(`Unknown type ${obj.type}`);
       continue;
     }
     const { args, params, next, comment } = parseBlock(obj);

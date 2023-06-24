@@ -1,6 +1,6 @@
 {
   "name": "csg-scratch",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "scripts": {
     "reset": "npx rimraf ./**/node_modules",
     "dev": "node prebuild.cjs && modern dev",
