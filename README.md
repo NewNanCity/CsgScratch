@@ -1,4 +1,10 @@
-# Modern.js App
+# CsgScratch Editor
+
+[View Document](https://www.wolai.com/newnan/cPurm6edhJ5sv1JDRoYyd5)
+
+[![](https://img.shields.io/github/stars/NewNanCity/CsgScratch?style=for-the-badge&color=red)](https://github.com/NewNanCity/CsgScratch)&nbsp;&nbsp;[![](https://img.shields.io/github/forks/NewNanCity/CsgScratch?style=for-the-badge)](https://github.com/NewNanCity/CsgScratch)&nbsp;&nbsp;[![](https://img.shields.io/github/issues/NewNanCity/CsgScratch?style=for-the-badge)](https://github.com/NewNanCity/CsgScratch)&nbsp;&nbsp;[![](https://img.shields.io/github/watchers/NewNanCity/CsgScratch?style=for-the-badge&color=blueviolet)](https://github.com/NewNanCity/CsgScratch)&nbsp;&nbsp;[![](https://img.shields.io/github/license/NewNanCity/CsgScratch?style=for-the-badge&label=Licence)](https://github.com/NewNanCity/CsgScratch)&nbsp;&nbsp;[![](https://img.shields.io/github/followers/Gk0Wk?style=for-the-badge&label=Gk0Wk&color=critical)](https://github.com/Gk0Wk)
+
+![Alt text](image.png)
 
 ## Setup
 
@@ -16,22 +22,10 @@ Start the dev server:
 pnpm dev
 ```
 
-Enable optional features or add a new entry:
-
-```
-pnpm new
-```
-
 Build the app for production:
 
 ```
 pnpm build
-```
-
-Preview the production build locally:
-
-```
-pnpm serve
 ```
 
 For more information, see the [Modern.js documentation](https://modernjs.dev/en).
