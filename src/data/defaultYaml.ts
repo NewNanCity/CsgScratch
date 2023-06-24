@@ -76,18 +76,18 @@ PlayerRule:
   #   1: 只有队伍内玩家可以互相看到名字。
   #   2: 游戏内都能看到队伍内玩家的名字。
   NameInvisible: 0
-  # 队伍内是否允许PVP。
+  # 是否允许攻击队友
   PvP: false
-  # 玩家被药水溅射到时扔出药水的人收到的通知，none是不显示
-  PotionHitMessage: none
-  # PvP 时打人的一方收到的通知，none是不显示
-  PvPMessage: none
-  # 被箭射中时，射人的一方收到的通知，none是不显示
-  ProjectileMessage: none
+  # PvP 为 false 时，攻击队友时打人的一方收到的通知，none是不显示
+  PvPMessage: none # 禁止攻击队友!
   # 队伍内是否允许溅射药水影响。
   Potionhit: true
+  # Potionhit 为 false 时，药水溅射到队友时扔出药水的人收到的通知，none是不显示
+  PotionHitMessage: none # 禁止用药水砸队友!
   # 队伍内是否允许弹射物伤害。
   Projectile: true
+  # Projectile 为 false 时，弹射物打到队友时，射人的一方收到的通知，none是不显示
+  ProjectileMessage: none # 禁止射击队友!
   # 是否强制队伍聊天。
   ChatInGroup: false
   # 是否允许携带物品进入队伍。如果关闭，背包或装备有东西的人禁止加入。
@@ -116,7 +116,15 @@ ControlTask:
   # 队伍被加载时(服务器启动、新的脚本载入等) 一般来讲都会需要的初始化工作
     - enabletrigger{all} # 激活所有触发器，一般会这样做除非你希望自定义触发器的开启时机
     - midjoin{false} # 不允许中途加入游戏
-Trigger: {}
+Trigger:
+  限定玩家区域:
+  # 防止玩家跑出游戏区域，记得修改坐标！
+    Type: WalkOutRegion
+    Id:
+      - 0 0 0 10 255 10 world
+    Task:
+      - teleport{0 0 0 world} @p
+      - title{&c你不可以离开游戏区域!,你已被传送回来} @p
 
 # CsgScratch 编辑器的相关信息，与 Csg 本身无关
-CsgScratchMeta: '{}'`;
+CsgScratchMeta: '{"ScratchPositionOfControlTask":{"onGroupLoaded":["30","60"]},"ScratchPositionOfTrigger":{"限定玩家区域":["30","310"]}}'`;

@@ -79,11 +79,19 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([w, x, y, z, b, t]) => `setblock{${b},${x} ${y} ${z} ${w}} ${t}`,
     parser: [
-      /^\s*consolecommand{([^}]+)}\s*(\S+.+)/,
-      ([c, t]) => [
-        ['target', t],
-        ['command', c],
-      ],
+      /^\s*setblock{([^}]+)}\s*(\S+.+)/,
+      ([c, t]) => {
+        const [block, cord] = c.split(',', 2);
+        const [x, y, z, w] = cord.trim().split(/(?:,\s*)|(?:\s+)/, 4);
+        return [
+          ['world', w],
+          ['x', x],
+          ['y', y],
+          ['z', z],
+          ['block', block],
+          ['target', t],
+        ];
+      },
     ],
   },
   'Task::damage': {
@@ -218,14 +226,17 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([t, w, x, y, z]) => `teleport{${x} ${y} ${z} ${w}} ${t}`,
     parser: [
-      /^\s*teleport{\s*(\S+)\s+(\S+)\s+(\S+)\s+([^}]+)}\s*(\S+.+)/,
-      ([x, y, z, w, t]) => [
-        ['target', t],
-        ['world', w],
-        ['x', x],
-        ['y', y],
-        ['z', z],
-      ],
+      /^\s*teleport{([^}]+)}\s*(\S+.+)/,
+      ([c, t]) => {
+        const [x, y, z, w] = c.trim().split(/(?:,\s*)|(?:\s+)/, 4);
+        return [
+          ['target', t],
+          ['world', w],
+          ['x', x],
+          ['y', y],
+          ['z', z],
+        ];
+      },
     ],
   },
   'Task::spawnmob': {
@@ -242,15 +253,19 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     ...taskTemplate,
     jsonfy: ([w, x, y, z, a, m]) => `spawnmob{${m},${a},${x} ${y} ${z} ${w}}`,
     parser: [
-      /^\s*spawnmob{([^,]+),([^,]+),\s*(\S+)\s+(\S+)\s+(\S+)\s+([^}]+)}/,
-      ([m, a, x, y, z, w]) => [
-        ['world', w],
-        ['x', x],
-        ['y', y],
-        ['z', z],
-        ['a', a],
-        ['mob', m],
-      ],
+      /^\s*spawnmob{([^}]+)}/,
+      ([t]) => {
+        const [m, a, c] = t.split(',', 3);
+        const [x, y, z, w] = c.trim().split(/(?:,\s*)|(?:\s+)/, 4);
+        return [
+          ['world', w],
+          ['x', x],
+          ['y', y],
+          ['z', z],
+          ['a', a],
+          ['mob', m],
+        ];
+      },
     ],
   },
   'Task::removemobs': {
@@ -270,16 +285,21 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     jsonfy: ([w, x1, y1, z1, x2, y2, z2]) =>
       `removemobs{${x1} ${y1} ${z1} ${x2} ${y2} ${z2} ${w}}`,
     parser: [
-      /^\s*removemobs{\s*(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+([^}]+)}/,
-      ([x1, y1, z1, x2, y2, z2, w]) => [
-        ['world', w],
-        ['x1', x1],
-        ['y1', y1],
-        ['z1', z1],
-        ['x2', x2],
-        ['y2', y2],
-        ['z2', z2],
-      ],
+      /^\s*removemobs{([^}]+)}/,
+      ([c]) => {
+        const [x1, y1, z1, x2, y2, z2, w] = c
+          .trim()
+          .split(/(?:,\s*)|(?:\s+)/, 7);
+        return [
+          ['world', w],
+          ['x1', x1],
+          ['y1', y1],
+          ['z1', z1],
+          ['x2', x2],
+          ['y2', y2],
+          ['z2', z2],
+        ];
+      },
     ],
   },
   'Task::checkprice': {
@@ -402,15 +422,24 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     jsonfy: ([w, x, y, z, t, i]) =>
       `addhologram{${x} ${y} ${z} ${w},${i},${t}}`,
     parser: [
-      /^\s*addhologram{\s*(\S+)\s+(\S+)\s+(\S+)\s+([^,]+),([^,]+),([^}]+)}/,
-      ([x, y, z, w, i, t]) => [
-        ['world', w],
-        ['x', x],
-        ['y', y],
-        ['z', z],
-        ['text', t],
-        ['id', i],
-      ],
+      /^\s*addhologram{([^}]+)}/,
+      ([tt]) => {
+        const ttt = tt.split(',');
+        const t = ttt.pop() ?? '';
+        const i = ttt.pop() ?? '';
+        const [x, y, z, w] = (ttt.join(' ').trim() ?? '0 0 0').split(
+          /(?:,\s*)|(?:\s+)/,
+          4,
+        );
+        return [
+          ['world', w],
+          ['x', x],
+          ['y', y],
+          ['z', z],
+          ['text', t],
+          ['id', i],
+        ];
+      },
     ],
   },
   'Task::edithologram': {
@@ -587,7 +616,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
   'Task::taskitem::at': {
     tooltip: '在背包指定位置给予目标一个物品执行器',
     message0:
-      '给予目标 %1 一个物品执行器 %2，放入背包的 %3 位置(空间不足则强行覆盖)',
+      '给予目标 %1 一个物品执行器 %2，放入背包的 %3 (0-35)位置(空间不足则强行覆盖)',
     args0: [
       { type: 'field_input', text: '@p', name: 'target' },
       { type: 'field_input', text: '', name: 'item' },
@@ -920,7 +949,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
   },
   'Data::tag': {
     tooltip: '设置一个局部变量',
-    message0: '设置局部变量 tag.%1 为 %2 (本列内可用)',
+    message0: '设置局部变量 tag.%1 为 %2 (本队伍内可用)',
     args0: [
       { type: 'field_input', text: '', name: 'key' },
       { type: 'field_input', text: '', name: 'value' },
@@ -1233,7 +1262,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
       [t]: { Type: 'InteractBlock', Id: [`${x} ${y} ${z} ${w}`] },
     }),
     triggerParser: ([c]) => {
-      const [x, y, z, w] = (c ?? '').split(/\s+/, 4);
+      const [x, y, z, w] = (c ?? '0 0 0').trim().split(/(?:,\s*)|(?:\s+)/, 4);
       return [
         ['world', w ?? ''],
         ['x', x],
@@ -1374,7 +1403,9 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
       },
     }),
     triggerParser: ([c]) => {
-      const [x1, y1, z1, x2, y2, z2, w] = (c ?? '').split(/\s+/, 7);
+      const [x1, y1, z1, x2, y2, z2, w] = (c ?? '')
+        .trim()
+        .split(/(?:,\s*)|(?:\s+)/, 7);
       return [
         ['world', w ?? ''],
         ['x1', x1],
@@ -1390,7 +1421,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     tooltip:
       '在一名玩家进入多个指定的区域时触发。若一直在区域内，触发间隔为1秒',
     message0:
-      '[触发器名 %1] \n 当玩家进入 %2 (x1 y1 z1 x2 y2 z2 world格式，JSON字符串数组序列化)多个区域时 (@p等可用)',
+      '[触发器名 %1] \n 当玩家进入 %2 (x1 y1 z1 x2 y2 z2 world格式，逗号分隔)多个区域时 (@p等可用)',
     args0: [
       { type: 'field_input', text: '', name: 'trigger' },
       { type: 'field_input', text: '', name: 'cords' },
@@ -1399,11 +1430,20 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     jsonfy: ([t, c]) => ({
       [t]: {
         Type: 'WalkInRegion',
-        Id: (JSON.parse(c) as string[]).map(s => s.trim()).filter(s => s),
+        Id: c
+          .split(',')
+          .map(s => s.trim())
+          .filter(s => s),
       },
     }),
     triggerParser: cords => [
-      ['cords', JSON.stringify(cords.map(s => s.trim()).filter(s => s))],
+      [
+        'cords',
+        cords
+          .map(s => s.trim())
+          .filter(s => s)
+          .join(','),
+      ],
     ],
   },
   'Sensing::WalkOutRegion': {
@@ -1428,7 +1468,9 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
       },
     }),
     triggerParser: ([c]) => {
-      const [x1, y1, z1, x2, y2, z2, w] = (c ?? '').split(/\s+/, 7);
+      const [x1, y1, z1, x2, y2, z2, w] = (c ?? '')
+        .trim()
+        .split(/(?:,\s*)|(?:\s+)/, 7);
       return [
         ['world', w ?? ''],
         ['x1', x1],
@@ -1443,7 +1485,7 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
   'Sensing::WalkOutRegion::Complex': {
     tooltip: '在一名玩家进入指定ID的区域时触发。若一直在区域内，触发间隔为1秒',
     message0:
-      '[触发器名 %1] \n 当玩家离开 %2 (x1 y1 z1 x2 y2 z2 world格式，JSON字符串数组序列化)多个区域时 (@p等可用)',
+      '[触发器名 %1] \n 当玩家离开 %2 (x1 y1 z1 x2 y2 z2 world格式，逗号分隔)多个区域时 (@p等可用)',
     args0: [
       { type: 'field_input', text: '', name: 'trigger' },
       { type: 'field_input', text: '', name: 'cords' },
@@ -1452,11 +1494,20 @@ export const blocks: Record<string, MyBlockRegisterProps> = {
     jsonfy: ([t, c]) => ({
       [t]: {
         Type: 'WalkOutRegion',
-        Id: (JSON.parse(c) as string[]).map(s => s.trim()).filter(s => s),
+        Id: c
+          .split(',')
+          .map(s => s.trim())
+          .filter(s => s),
       },
     }),
     triggerParser: cords => [
-      ['cords', JSON.stringify(cords.map(s => s.trim()).filter(s => s))],
+      [
+        'cords',
+        cords
+          .map(s => s.trim())
+          .filter(s => s)
+          .join(','),
+      ],
     ],
   },
   'Sensing::VexClickButton': {

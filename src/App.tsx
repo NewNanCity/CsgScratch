@@ -104,7 +104,9 @@ export default React.memo(() => {
       meta,
     );
     (doc as any).contents.set('Trigger', doc.createNode(Trigger));
-    for (const [tName, [tComment, taskComments]] of Object.entries(Trigger)) {
+    for (const [tName, [tComment, taskComments]] of Object.entries(
+      commentMap.t,
+    )) {
       (doc.getIn(['Trigger', tName], true) as any).commentBefore = tComment;
       for (let i = 0; i < taskComments.length; i++) {
         (doc.getIn(['Trigger', tName, 'Task', i], true) as any).comment =
