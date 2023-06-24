@@ -8,7 +8,7 @@
 
 [![](https://img.shields.io/github/watchers/NewNanCity/CsgScratch?style=for-the-badge&color=blueviolet)](https://github.com/NewNanCity/CsgScratch)&nbsp;&nbsp;[![](https://img.shields.io/github/license/NewNanCity/CsgScratch?style=for-the-badge&label=Licence)](https://github.com/NewNanCity/CsgScratch)&nbsp;&nbsp;[![](https://img.shields.io/github/followers/Gk0Wk?style=for-the-badge&label=Gk0Wk&color=critical)](https://github.com/Gk0Wk)
 
-</center>center
+</center>
 
 ![Alt text](image.png)
 
