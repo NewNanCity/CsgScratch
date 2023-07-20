@@ -116,6 +116,7 @@ data:
   name: '%{BKY_CATEGORY_VARIABLES}'
   colour: '#FF8C1A'
   secondaryColour: '#DB6E00'
+  custom: VARIABLE
   blocks:
     Data::data:
     Data::tag:
