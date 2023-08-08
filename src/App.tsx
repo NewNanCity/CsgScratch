@@ -247,12 +247,11 @@ export default React.memo(() => {
         indentWithTab={false}
         style={{
           fontSize: 18,
-          fontFamily:
-            'Source Code Pro, Menlo, Monaco, "Courier New", monospace',
           height: '100%',
           width: '100%',
           borderLeft: '1px solid #fff7',
           overflowX: 'auto',
+          cursor: 'text',
         }}
       />
     </ThemeProvider>

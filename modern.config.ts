@@ -5,8 +5,14 @@ export default defineConfig<'rspack'>({
   runtime: {
     router: true,
   },
+  html: {
+    disableHtmlFolder: true,
+  },
   output: {
     assetPrefix: '.',
+    // enableInlineScripts: true,
+    enableInlineStyles: true,
+    disableSourceMap: true,
     copy: [{ from: './src/media', to: './media' }],
   },
   plugins: [

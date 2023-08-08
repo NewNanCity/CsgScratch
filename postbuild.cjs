@@ -3,7 +3,7 @@ const path = require('path');
 
 const dist = path.resolve('dist');
 const htmlHome = path.resolve('dist', 'html');
-const htmlFrom = path.resolve('dist', 'html', 'main', 'index.html');
+const htmlFrom = path.resolve('dist', 'html', 'main.html');
 const htmlTo = path.resolve('dist', 'index.html');
 // remove all .json file in dist
 fs.readdirSync(dist).forEach(file => {

@@ -36,3 +36,14 @@ div#root {
   background-color: #0093ff77;
   box-shadow: 0 0 3px #0009;
 }
+
+.cm-editor {
+    outline-color: transparent !important;
+    outline: none !important;
+}
+.cm-editor .cm-gutter.cm-lineNumbers {
+    min-width: 40px;
+}
+.cm-editor.ͼ1 .cm-scroller {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Courier New", "Liberation Mono", monospace !important;
+}
